@@ -1,0 +1,8 @@
+Fixed: 
+Error:
+Could not find a declaration file for module 'query-string'. 'c:/Users/tanja/Desktop/cook/front/node_modules/query-string/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/query-string` if it exists or add a new declaration (.d.ts) file containing `declare module 'query-string';`Vetur(7016)
+  npm uninstall query-string
+npm i query-string
+
+

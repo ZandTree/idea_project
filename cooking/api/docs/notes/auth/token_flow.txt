@@ -1,0 +1,26 @@
+Menu is pivotal element in smooth flow
+app uses 2 tokens: access (35 min lifespan) and refresh
+
+1. when Menu renders(mounted) => request to dj server GET with axios header Authorization: null or 'access jwt'
+
+2. if resp 401 (un-auth-ed) = > repeat each 30 min a new request to dj server 
+
+2. if resp 200 (auth-ed) = > all user features for UI rendered in MENU
+ and then repeat a new request to the server (each 30 min) to get new access if refresh token is valid 
+otherwise logout via mutation and window.location.reload
+
+
+// currnt: js native
+
+const now = Math.ceil(Date.now()/1000)
+             console.log("now is ",now)
+             const tokenRefreshPayload = JSON.parse(atob(refreshToken.split('.')[1]));
+             const expTerm = tokenRefreshPayload.exp
+
+          
+################## In Menu ######################################
+           interceptors   vs setTimeout(current)
+1. Why NOT interceptors?
+Ans: First request when Menu mounted => users/me
+user first on site and not auth-ed=> resp 401 => lookup for refresh => No refresh => re-direct to login=> UI not friendly
++  response undefined (?) TODO

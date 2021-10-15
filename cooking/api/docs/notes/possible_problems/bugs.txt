@@ -1,0 +1,14 @@
+1. likes
+API point likes: 
+model Idea 
+GET single idea or qs ideas
+idea.av_likes|=> cached fields
+
+API handle like:
+model UserIdeaRelations keeps track about event and saves changes if needed
+
+PATCH (like/rating/ or both)
+resp {like:true/false} 
+
+bug: front 'like' can be +1 if already done ( via optimistic mode) event it was toggled -=1|=> result 2!
+although after reload/re-built comp - real like amount displayed

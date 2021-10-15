@@ -1,0 +1,140 @@
+INITIAL NOTE:
+HomePage is a static page without data (at this point)
+Only Menu component makes first request for data by mounting: http://127.0.0.1:8000/auth/users/me/
+
+
+A. 
+A1 Auth (djoser)
+====================================================================================================
+
+1.sign-up:
+POST localhost:8000/auth/users/ (username,email,password,re_password)
+
+2.activate account
+POST localhost:8000/auth/users/activattion/ (uid,token)
+
+3.login
+POST localhost:8000/auth/jwt/create/ (email,password)
+
+4.Get info about user
+GET localhost:8000/auth/users/me/ (in headers: 'JWT ey...gghghgh')
+
+A2 Auth (custom)
+===================================================================================================
+1.delete account
+DELETE/POST(?) localhost:8000/api/v1/delete-account/
+user is not deleted but user.is_active = False (no access via even still valid jwt)
+====================================================================================================
+B Categories
+====================================================================================================
+# Tree structure for left-side menu
+GET localhost:8000/api/v1/categories/ 
+
+#No tree structure for drom-down idea(create/edit) form
+GET localhost:8000/api/v1/categories-create-idea/  
+example of dj serv resp:[{"name": "Keuken","id": 2},{"name": "School","id": 3}]
+#Collect ideas for a given category(categ slug)
+GET localhost:8000/api/v1/cats/slug/                
+=====================================================================================================
+C Ideas (slug)
+=====================================================================================================
+GET /api/v1/ideas-collection/ideas/(slug=first-post-ysMr)/
+DELETE /api/v1/ideas-collection/ideas/slug/
+
+# create and edit idea general info: need Content-Type: multipart/form-data 
+general note: POST /api/v1/ideas-collection/ideas/idea/  
+
+#idea created:
+POST (ideaInput)=>axios.post(`/api/v1/ideas-collection/ideas/`,ideaInput)=> resp.status = 201    
+        tags:   
+                = are not required,default = "" will be send to dj server;
+                = otherwise: send tag's string (len <50 chars)
+                = dj server sends back obj new idea with tags as an array of tags separated by comma
+                front: checks for input tags string length(vuelidate), lowecase and trim
+                back: clears tags further from possible: ,.:;'*)/(!") 
+                error tag from backend: err.response.data.detail (len > limit 50 chars)
+
+        thumbnail:    
+                = are not required,default = "" will be send to dj server; (?)       
+                
+                front: checks for img. size and extentions; 
+                back: checks for img size in serializer validatior
+#idea edited:
+
+PUT     (slug,ideaInput)=> axios.put(`/api/v1/ideas-collection/ideas/${slug}/`,ideaInput)
+        resp.status = 200 OK
+
+# do like: idea id, likeInfo = {"like":boolean}
+PATCH   (likeInfo)=> axios.patch(`/api/v1/ideas-collection/relations/${likeInfo.id}/`,likeInfo.like) 
+        resp: status = 200 OK, data = {"like":true/false} 
+
+# do rating: idea id, rateInfo = {"rating":1-5}
+PATCH   (ratingInfo)=> axios.patch(`/api/v1/ideas-collection/relations/${rating.id}/`,rateInfo.rating) 
+        resp: status = 200 OK, data = {"rating":true/false}   
+
+=======================================================================================================
+D Profile
+=======================================================================================================
+GET  localhost:8000/api/v1/profile-info/id             AllowAny
+        
+PATCH localhost:8000/api/v1/profile-owner/unid/ headers: Authorization: JWT token
+=======================================================================================================
+E Tags
+=======================================================================================================
+GET localhost:8000/api/v1/tags/'
+GET localhost:8000/api/v1/tags/slug/                 (list ideas for a given tag slug)
+
+GET localhost:8000/api/v1/tags-name/name/            (list ideas for a given tag name) 
+
+note: API expects tags as a string; sends array of tags back
+=======================================================================================================   
+G Search
+======================================================================================================
+Search ideas search_fields = ['title', 'lead_text', 'main_text']
+    
+GET localhost:8000/api/v1/idea-collection/ideas/?search=yourWord
+
+=======================================================================================================
+H Filter
+=======================================================================================================
+H.1 
+Filter based on: filterset_fields = ['featured'] #,'view_count']
+------
+GET /api/v1/ideas-collection/ideas/?title=&categ=&featured=true&status=&author=
+
+H.2 
+Ordering ordering = ('title','created_at','max_rating')
+--------
+default = '-created_at' (newest at top)
+set featured = false as default
+
+GET /api/v1/idea-collection/ideas/?ordering=title
+GET /api/v1/idea-collection/ideas/?ordering=-title
+GET /api/v1/idea-collection/ideas/?ordering=-created_at
+GET /api/v1/idea-collection/ideas/?ordering=-created_at
+GET /api/v1/ideas-collection/ideas/?limit=6&offset=0&ordering=-max_rating
+only oldest on top
+GET /api/v1/ideas-collection/ideas/?featured=false&limit=6&offset=0&ordering=created_at
+featured&& sort newest on top:
+GET /api/v1/ideas-collection/ideas/?featured=true&limit=6&offset=0&ordering=-created_at
+featured&&sort oldest on top
+GET /api/v1/ideas-collection/ideas/?featured=true&limit=6&offset=0&ordering=created_at
+
+H.3
+mix filter and ordering
+-----------------------
+GET /api/v1/ideas-collection/ideas/?featured=true&ordering=-title
+
+GET /api/v1/ideas-collection/ideas/?featured=true&ordering=-title&limit=2&offset=2
+===============================================================================================
+I Followers/Following
+===============================================================================================
+I.1 Get following (profile unid=> get list of users whom this person is following)
+                                              -----
+GET /api/v1/following/<unid>/
+
+I.2 Get followers (user id=> get list of followers(profiles))
+GET followers/<id>/
+
+F Idea list (ideas of people whom a given person is following) == feed
+GET /api/v1/feed-ideas/<unid>/

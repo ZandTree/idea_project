@@ -1,0 +1,40 @@
+idea = viewset with crud and pagination
+
+url: baseUrl/api/v1/ideas-collection/(idea-slug)
+
+=========
+Backend:
+=========
+1. mode Idea/ IdeaUserRelation
+instead of annotated attr (total likes,max rating,average rating) |=> created chached fields
+attr names are the same in model Idea
+value gets re-calculated only if like/or rating has been changed
+2. method .save() model IdeaUserRelation tracks these changes and calls for 
+aggregation of like/rating if needed
+
+So: instead of idea qs.annotation => use model Idea cached fields that are updated
+via aggregation in IdeaUserRelation model
+
+3.viewset: 
+select_related (category => FK)
+prefetch_related (tags   => m2m)
+
+
+result: time winst incl  users_comments=Count('comments',distinct=True)
+initial          total qs's =  12  time 39ms
+final(current)   total qs's =   5  time 24ms 
+4. qs: last on top; old - at the bottom
+--------------------------------
+Current solution with thumbnail:
+--------------------------------
+Model has a flag = remove_file; 
+Ser-er Idea Model manages actions with thumbnail img
+options:
+    A. user doesn't attach img => remove_file = False, thumbnail = None
+    B. user deletes a given file => in view remove_file = True, thumbnail = None
+      given img gets deleted at aws3 storage and url in db: self.instance.thumbnail.delete()  
+    C. user replaces current img with a new img => in view remove_file = True
+      prev img - gets deleted at aws3 (no orpans there) : self.instance.thumbnail.delete()  
+    super().save(*args,**kwargs) => save instance with thumbnail value
+
+Bug: idea without slug (in this case in .save() random string as a slug)

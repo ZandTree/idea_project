@@ -1,0 +1,44 @@
+parent: Idea Edit
+child: IdeaForm
+
+Notes:
+1. for edit need of pre-filled form with existed data
+2. parent -> :initialValues
+3. child can't user treat initialValues in v-model; need to create obj in data()
+4. tags (array from API) should be transformed to a string
+5. categs should be in form of list
+    created(){
+        go to server API to fetch a list (id,name for each categ)
+        forEach to make an array:
+        const arrCategnames = [
+            {
+                text:'Choose',
+                value:null,
+                disabled:null,
+                selected:true
+
+
+            }
+
+        ]....push categs text:item.name, value:item.id
+    }
+6. thumbnail img:
+    6.1 user can leave thumbnail unchanged
+    6.2 user can delete: prev img
+    6.3 user can remove prev and replace it with a new one
+Elements to manage actions with thumbnail: button upload and checkbox remove file
+Button upload                                vs            Remove File checbox
+label
+@change=onFileChange                                       @change=detachFile
+@click=clearCheckBoxUploadFile   
+
+ref=file                                                    ref=check
+click button: clear prev errors
+this.$refs.check.checked = false
+this.localErr = false
+
+7.Upload button = place where user can see the current img file name
+here three options: real img file / string (file name) / nothing: 
+ img&&img.name (file obj)
+ img&& !img.name (string = custom func + computed)
+ !img=> Select File

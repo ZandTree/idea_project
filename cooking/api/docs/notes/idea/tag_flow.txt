@@ -1,0 +1,22 @@
+Idea create/update
+--------------------
+
+general note:
+1.tags string to server API
+2.array tags from server API
+
+idea create
+1.  tags should be sent as a string to dj server API
+2. front validation in component: 
+    vueldate: length <=50 chars
+    custom: no chars like: @$%#
+    custom: at front/.../helpers/tagsHelper.trimInputTag
+
+if idea update(edit) additional features:
+    front/.../helpers/tagsHelper.convertTagsListToString
+    gets tags array from API => string to be rendered in component 
+
+
+
+        
+       
