@@ -4,6 +4,8 @@
 
 ### Banned or Unauthenticated users can only read content
 
+### Nested comments
+
 
 
 1. django 3.2
