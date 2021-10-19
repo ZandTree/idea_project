@@ -18,6 +18,8 @@
 
 6. Images upload: aws s3
 
+7. Bootstrap 4
+
 `git pull  https://github.com/ZandTree/idea_project.git`
 
 #### Bugs:
