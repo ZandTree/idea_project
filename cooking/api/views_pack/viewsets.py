@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.db.models import Count
+from django.db.models import Count,Max,Avg
 import logging
 
 from rest_framework import viewsets
@@ -43,22 +43,26 @@ class IdeaViewSet(viewsets.ModelViewSet):
     pagination for tests should be off
     """
     serializer_class = IdeaSerializer
-    permission_classes = (IsAuthorOrIsStaffOrReadOnly,)  # IsOwnerOrIsStaffOrReadOnly)
+    permission_classes = (IsAuthorOrIsStaffOrReadOnly,)  
     lookup_field = 'slug'
     parser_classes = (FormParser, MultiPartParser)
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ['featured', 'view_count']
     search_fields = ['title', 'lead_text', 'main_text']
     # Explicitly specify which fields the API may be ordered against
-    ordering_fields = ('title', 'created_at', 'max_rating')
+    ordering_fields = ('title', 'created_at', 'max_rating','avg_rating')
     # This will be used as the default ordering
     ordering = ('-created_at',)
+    # only for testing
+    pagination_class= None
 
+    
     def get_queryset(self):
         queryset = Idea.objects.annotate(
-            users_comments=Count('comments', distinct=True)
-        ).select_related('author', 'categ').prefetch_related('tags')
-
+            users_comments=Count('comments', distinct=True),
+                    
+        ).select_related('author', 'categ').prefetch_related('tags').order_by('-created_at')
+        
         return queryset
 
     def update(self, request, *args, **kwargs):

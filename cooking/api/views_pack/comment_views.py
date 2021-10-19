@@ -12,7 +12,7 @@ from rest_framework.filters import OrderingFilter
 from comments.models import Comment
 from ideas.models import Idea
 from api.serializers.comments.comment_ser import CommentSerializer
-from api.permissions import IsOwnerOrIsStaff
+from api.permissions import IsOwnerOrIsStaffOrReadOnly
 
 User = get_user_model()
 
@@ -20,7 +20,7 @@ User = get_user_model()
 class CommentAPIView(CreateModelMixin, UpdateModelMixin, DestroyModelMixin, RetrieveModelMixin,
                      viewsets.GenericViewSet):
     """create comment instance """
-    permission_classes = (IsOwnerOrIsStaff,)
+    permission_classes = (IsOwnerOrIsStaffOrReadOnly,)
     authentication_class = (IsAuthenticated,)
     serializer_class = CommentSerializer
     queryset = Comment.objects.all()

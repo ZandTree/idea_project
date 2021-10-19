@@ -24,12 +24,12 @@ class IdeaSerializer(TaggitSerializer, ser.ModelSerializer):
     tags = TagListSerializerField(required=False)
     users_comments = ser.IntegerField(read_only=True)
     thumbnail = ser.ImageField(validators=[validate_size], required=False, allow_null=True)
-
+        
     class Meta:
         model = Idea
-        fields = ('id', 'title', 'author', 'lead_text', 'main_text', 'slug',
+        fields = ('id', 'title', 'author', 'lead_text', 'main_text', 'slug','users_comments',
                   'owner_idea', 'author_unid', 'categ_name', 'categ', 'created_at', 'status', 'thumbnail',
-                  'avg_rate', 'an_likes', 'featured', 'tags', 'max_rating', 'users_comments', 'remove_file')
+                  'avg_rate', 'an_likes', 'featured', 'tags', 'max_rating',  'remove_file')
 
     def save(self, *args, **kwargs):
         """ if idea has already thumbnail it will be replaced by a new img
@@ -37,7 +37,8 @@ class IdeaSerializer(TaggitSerializer, ser.ModelSerializer):
         # no img from front( img not attached (empty str) or not changed (str = url aws s3))
         validated data: 'thumbnail', None / 'remove_file', False
         # user attached img: 
-        validated data: ('thumbnail', <InMemoryUploadedFile: one.jpg (image/jpeg)>)        
+        validated data: ('thumbnail', <InMemoryUploadedFile: one.jpg (image/jpeg)>) 
+        'remove_file' set to True in view and passed here       
         """
         del_previous_file = self.validated_data.get('remove_file')
         img = self.validated_data.get('thumbnail', None)

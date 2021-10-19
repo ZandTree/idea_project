@@ -45,9 +45,13 @@ class IsOwnerOrIsStaff(BasePermission):
     """
     Instance must have an attribute named `user_id`.
     Only user == owner of the obj and NOT banned; OR user == staff can RUD operations on obj
+    (example: profile perms)
+    does NOT allow GET requests from not owner/staff
     """
-
+   
     def has_object_permission(self, request, view, obj):
+        print("inside has_obj_perms")
+        print("msg from perms line 51- obj user id",obj.user_id)
         return bool(
             request.user and request.user.is_authenticated and
             not request.user.is_banned and
@@ -58,18 +62,8 @@ class IsOwnerOrIsStaff(BasePermission):
 class IsOwnerOrIsStaffOrReadOnly(BasePermission):
     """
     Object-level permission to only allow owners of an object to edit it.
-    Assumes the model instance has an `author` attribute.
-    has_object permission (for obj with id)
-    """
-
-    def has_permission(self, request, view):
-        """ check of user has perms before obj is created: method post;
-        banned user can't create object
-        """
-        return bool(
-            request.user and request.user.is_authenticated and
-            not request.user.is_banned
-        )
+    Others can only see content (example comments perms)
+    """    
 
     def has_object_permission(self, request, view, obj):
         """
@@ -84,4 +78,6 @@ class IsOwnerOrIsStaffOrReadOnly(BasePermission):
             request.user.is_authenticated and
             not request.user.is_banned and
             (obj.user == request.user or request.user.is_staff)
-        )
+    )
+
+    

@@ -89,16 +89,15 @@ class Idea(TimeStamp):
     tags = TaggableManager(blank=True, verbose_name="Tags", help_text="Tags should be separated by comma")
     avg_rate = models.DecimalField(decimal_places=2, max_digits=5, default=None, null=True)
     an_likes = models.IntegerField(default=None, null=True)
-    max_rating = models.DecimalField(decimal_places=2, max_digits=5, default=None, null=True)
+    max_rating = models.DecimalField( default=None, null=True,decimal_places=2, max_digits=5,)
     remove_file = models.BooleanField(default=False)
+    price = models.DecimalField(decimal_places=2, max_digits=5,null=True, blank=True,default="0.00")
+
 
     objects = IdeaManager()
 
     def __str__(self):
         return self.title
-
-    def get_absolute_url(self):
-        return reverse('ideas:detail', kwargs={'slug': self.slug})
 
     def save(self, *args, **kwargs):
         """
@@ -136,7 +135,7 @@ class UserIdeaRelation(models.Model):
     dislike = models.BooleanField(blank=True, default=False)
     in_bookmark = models.BooleanField(blank=True, default=False)
     rating = models.PositiveSmallIntegerField(choices=RATING, null=True, blank=True)
-
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.old_rating = self.rating

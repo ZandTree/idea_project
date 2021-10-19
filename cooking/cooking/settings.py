@@ -91,7 +91,7 @@ WSGI_APPLICATION = 'cooking.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': config.get('DB_NAME'),
+        'NAME': 'zombi',
         'USER': config.get('DB_USER'),
         'PASSWORD': config.get('DB_PSW'),
         'HOST': 'localhost',
@@ -176,7 +176,7 @@ DJOSER = {
     'SET_USERNAME_RETYPE': False,
     'SET_PASSWORD_RETYPE': True,
     # if user email doesn't exist in db||=> 400 BAD REQ resp
-    'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True
+    'PASSWORD_RESET_SHOW_EMAIL_NOT_FOUND': True,
 
     'SERIALIZERS': {
         'user_create': 'djoser.serializers.UserCreateSerializer',
@@ -198,4 +198,4 @@ MEDIA_URL = "/media/"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGGING = conf.LOGGING
+# LOGGING = conf.LOGGING

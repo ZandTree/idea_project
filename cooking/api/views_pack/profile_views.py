@@ -12,7 +12,7 @@ from rest_framework import status
 
 from api.serializers.account.user_serializer import UserSerializer
 from api.serializers.account.profile_serializer import ProfileSerializer
-from api.permissions import IsOwnerOrIsStaffOrReadOnly, IsOwnerOrIsStaff
+from api.permissions import IsOwnerOrIsStaff
 from timestamp.broadcast_utils.user_utils import get_ip
 
 User = get_user_model()
@@ -66,8 +66,9 @@ class ProfileRetrUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
        readOnly attr: name,
        writable/changable attr's: bio,website, image
     """
-    serializer_class = ProfileSerializer  # ProfileSerializer
-    permission_classes = (IsOwnerOrIsStaffOrReadOnly,)
+    serializer_class = ProfileSerializer  # ProfileSerializer  (IsOwnerOrIsStaffOrReadOnly,)
+    authentication_class = (IsAuthenticated,)
+    permission_classes = (IsOwnerOrIsStaff,)
     queryset = Profile.objects.all()
     parser_classes = (FormParser, MultiPartParser)
 
@@ -76,7 +77,7 @@ class ProfileRetrUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         super().__init__(*args, **kwargs)
 
     def get_object(self):
-        """ TODO in logs:status 405 if attempt to del account via this route"""
+        """ in logs:status 405 if attempt to del account via this route"""
         try:
             """ can check user is banned here """
             obj = get_object_or_404(
@@ -99,22 +100,53 @@ class ProfileRetrUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         return obj
 
     def delete(self, request, *args, **kwargs):
-        """ change user.is_active =False to delete object(both profile and user
-        idea obj and comment => DO_NOTHING"""
+        """ delete profile and delete user from db""" 
+        # does user exist?       
         try:
-            unid = kwargs.get('unid')
-            profile = get_object_or_404(Profile, unid=unid)
+            unid = kwargs.get('unid')            
+            profile = get_object_or_404(Profile, unid=unid)            
             user = profile.user
+        except User.DoesNotExist:
+            return Response({'error': 'user does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        # track failure in user delete account
+        try:
             user_deleted_id = user.id
             user.delete()
             remote_address = get_ip(self.request)
             logger.warning(f'User id {user_deleted_id} deleted his profile from IP:{remote_address}')
-            return Response({'success': 'Successfully deleted user acoount'}, status=status.HTTP_204_NO_CONTENT)
-        except User.DoesNotExist:
-            return Response({'error': 'user does not exist'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'success': 'Successfully deleted user acoount'}, status=status.        HTTP_204_NO_CONTENT)
         except Exception as e:
-            logger.error(f'500 ERROR: Failed to delete user id: {user_deleted_id} {e}')
-            return Response({'error': 'Failed to delete user account'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            print("line 112 calling")
+            logger.error(f'500 ERROR: Failed to delete user id: {e}')
+            return Response({'error': 'Failed to delete user account'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)   
+
+     # below method delete with failed unit test
+     # not owner of the account can delete somebody else account!  
+     # due to try except condition! 
+    # def delete(self, request, *args, **kwargs):
+    #     """ delete profile and delete user from db"""
+    #     try:
+    #         print("user from request is :",request.user)
+    #         print("user from request has unid  :",request.user.profile.unid)
+    #         unid = kwargs.get('unid')
+    #         print("tries to reach data and delete  user with unid in url",unid)
+    #         profile = get_object_or_404(Profile, unid=unid)
+    #         print('profile to delete belongs to',profile)
+    #         user = profile.user
+    #         print('user to delete is',user)
+    #         # print(self.check_object_permissions(self.request, profile))
+    #         user_deleted_id = user.id
+    #         user.delete()
+    #         # self.check_object_permissions(self.request, profile)
+    #         # print("check obj perms line 89",self.check_object_permissions(self.request,profile))
+    #         remote_address = get_ip(self.request)
+    #         logger.warning(f'User id {user_deleted_id} deleted his profile from IP:{remote_address}')
+    #         return Response({'success': 'Successfully deleted user acoount'}, status=status.HTTP_204_NO_CONTENT)
+    #     except User.DoesNotExist:
+    #         return Response({'error': 'user does not exist'}, status=status.HTTP_404_NOT_FOUND)
+    #     except Exception as e:
+    #         logger.error(f'500 ERROR: Failed to delete user id: {user_deleted_id} {e}')
+    #         return Response({'error': 'Failed to delete user account'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def update(self, request, *args, **kwargs):
         """let op: don't save twice to avoid err msg: file not img||corrupt"""

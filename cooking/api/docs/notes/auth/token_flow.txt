@@ -1,4 +1,4 @@
-Menu is pivotal element in smooth flow
+Menu is an pivotal element in a smooth flow
 app uses 2 tokens: access (35 min lifespan) and refresh
 
 1. when Menu renders(mounted) => request to dj server GET with axios header Authorization: null or 'access jwt'

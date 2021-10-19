@@ -10,5 +10,11 @@ model UserIdeaRelations keeps track about event and saves changes if needed
 PATCH (like/rating/ or both)
 resp {like:true/false} 
 
-bug: front 'like' can be +1 if already done ( via optimistic mode) event it was toggled -=1|=> result 2!
+
+################## TODO: bugs to solve #########################################################
+1. bug: front 'like' can be +1 if already done ( via optimistic mode) event it was toggled -=1|=> result 2!
 although after reload/re-built comp - real like amount displayed
+
+2.sorting by rating works not correctly (in reverse order); even on qs without apllying ordering func from drf 
+problem persists without drf ordering; ? decimal field + null values |=> sort F('max_rating').desc(nulls_last=True? )
+

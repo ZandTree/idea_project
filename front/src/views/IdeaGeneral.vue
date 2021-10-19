@@ -46,9 +46,7 @@ export default {
 .row > div{
   border:1px solid black;
 }
-.push-down{
-  /* margin-bottom: 0.5em; */
-}
+
 .color{
     background-color: #ffebcd;
 }
