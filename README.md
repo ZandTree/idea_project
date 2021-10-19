@@ -18,7 +18,7 @@
 
 6. Images upload: aws s3
 
-`git pull  https://github.com/lissa3/idea2.git`
+`git pull  https://github.com/ZandTree/idea_project.git`
 
 #### Bugs:
 
