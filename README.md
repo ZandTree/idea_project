@@ -18,13 +18,14 @@
 
 6. Images upload: aws s3
 
-`git clone  https://github.com/lissa3/idea2.git`
+`git pull  https://github.com/lissa3/idea2.git`
 
 #### Bugs:
 
 1. Sort objects "high rating to low rating" displayed not correctly
+#### help to solve it - more than welcome
 
-#### help to solve it - welcome
+
 
 - [x] Deploy: Linode (without docker)
 - [ ] Fix bugs
