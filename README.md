@@ -7,20 +7,21 @@
 ### Nested comments
 
 
-
 1. django 3.2
 
 2. django REST framework
 
-3. Unit tests
+3. auth (djoser, JWT)
 
-4. vue.js 2
+4. Unit tests
 
-5. vue.js validation: vuelidate
+5. vue.js 2
 
-6. Images upload: aws s3
+6. vue.js validation: vuelidate
 
-7. Bootstrap 4
+7. Images upload: aws s3
+
+8. Bootstrap 4
 
 `git pull  https://github.com/ZandTree/idea_project.git`
 
