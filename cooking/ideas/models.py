@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.urls import reverse
+
 
 from django.core.validators import FileExtensionValidator
 
@@ -61,7 +61,10 @@ PUB = 3
 
 
 class Idea(TimeStamp):
-    """two cached fields:avg_rate, an_likes (db calc only if attr like or attr rating get updated)"""
+    """
+    tree cached fields: max_rating, avg_rate, an_likes will be calculated  only if attr's like or attr rating get updated
+    via through model UserIdeaRelation
+    """
     STATUS_CHOICES = (
         (PROGR, 'in progres'),
         (REVIEW, 'in review'),
@@ -80,7 +83,7 @@ class Idea(TimeStamp):
     view_count = models.IntegerField(blank=True, default=0)
     thumbnail = models.ImageField(blank=True, null=True, upload_to=upload_img,
                                   validators=[FileExtensionValidator(allowed_extensions=ALLOWED_EXTENTIONS),
-                                              validate_size])
+                                  validate_size])
 
     featured = models.BooleanField(blank=True, default=False)
     fans = models.ManyToManyField(User, related_name='idea_fans', through='UserIdeaRelation')
@@ -101,7 +104,7 @@ class Idea(TimeStamp):
 
     def save(self, *args, **kwargs):
         """
-        here: try to catch bug with idea formed without slug
+        add attr slug to idea object if it was formed without slug 
         """
         start_creating = not self.pk
         if start_creating:
@@ -121,7 +124,7 @@ class Idea(TimeStamp):
 
 
 class UserIdeaRelation(models.Model):
-    """ rating here stores value, idea attr rating calc avg and cache it in .save()"""
+    """ if attr rating gets updated cached fields in idea model will be also re-calculated """
     RATING = (
         (1, 'OK'),
         (2, 'Fine'),
