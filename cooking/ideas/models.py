@@ -124,7 +124,7 @@ class Idea(TimeStamp):
 
 
 class UserIdeaRelation(models.Model):
-    """ if attr rating gets updated cached fields in idea model will be also re-calculated """
+    """ if attr rating or like get updated cached fields in idea model will be also re-calculated """
     RATING = (
         (1, 'OK'),
         (2, 'Fine'),
