@@ -1,5 +1,4 @@
 from rest_framework import serializers as ser
-
 from taggit.models import Tag
 
 

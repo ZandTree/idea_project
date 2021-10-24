@@ -1,6 +1,6 @@
+import json
 import os
 import time
-import json
 
 
 def checkTagStringLength(tag_string):

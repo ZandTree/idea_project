@@ -1,12 +1,10 @@
 from datetime import date
+
 from django.contrib import admin
 from django.utils.safestring import mark_safe
+from mptt.admin import MPTTModelAdmin, TreeRelatedFieldListFilter
 
-from mptt.admin import MPTTModelAdmin
-from mptt.admin import TreeRelatedFieldListFilter
-
-from .models import Category
-from .models import Idea, Category, UserIdeaRelation
+from .models import Category, Idea, UserIdeaRelation
 
 
 class YearIdeaFilter(admin.SimpleListFilter):

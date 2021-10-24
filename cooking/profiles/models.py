@@ -1,10 +1,9 @@
-from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import FileExtensionValidator
-
-from timestamp.models import TimeStamp
+from django.db import models
 from timestamp.broadcast_utils.idea_utils import upload_img
 from timestamp.broadcast_utils.validators import validate_size
+from timestamp.models import TimeStamp
 
 ALLOWED_EXTENTIONS = ('JPG', 'JPEG', 'PNG')
 

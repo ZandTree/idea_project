@@ -1,9 +1,10 @@
-from django.db.models.signals import post_save, pre_save, post_delete
-from django.dispatch import receiver
-from django.contrib.auth import get_user_model
 import logging
 
-from timestamp.broadcast_utils.base_utils import make_unid, create_color
+from django.contrib.auth import get_user_model
+from django.db.models.signals import post_delete, post_save, pre_save
+from django.dispatch import receiver
+from timestamp.broadcast_utils.base_utils import create_color, make_unid
+
 from profiles.models import Profile
 
 logger = logging.getLogger('user_issues')

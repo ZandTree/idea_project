@@ -1,17 +1,13 @@
-from django.db import models
-from django.contrib.auth import get_user_model
-
-
-from django.core.validators import FileExtensionValidator
-
-from mptt.models import MPTTModel, TreeForeignKey
 from autoslug import AutoSlugField
+from django.contrib.auth import get_user_model
+from django.core.validators import FileExtensionValidator
+from django.db import models
+from mptt.models import MPTTModel, TreeForeignKey
 from taggit.managers import TaggableManager
-
-from timestamp.models import TimeStamp
-from timestamp.broadcast_utils.idea_utils import upload_img
 from timestamp.broadcast_utils.base_utils import get_random_str
+from timestamp.broadcast_utils.idea_utils import upload_img
 from timestamp.broadcast_utils.validators import validate_size
+from timestamp.models import TimeStamp
 
 ALLOWED_EXTENTIONS = ('JPG', 'JPEG', 'PNG')
 
@@ -149,7 +145,8 @@ class UserIdeaRelation(models.Model):
 
     def save(self, *args, **kwargs):
         """ import here: to avoid circular import (idea-user-relation calls idea-user-relation)"""
-        from .logic import calc_rating, calc_count_likes, calc_max_rating
+        from .logic import calc_count_likes, calc_max_rating, calc_rating
+
         # if like or rating changed |=> re-calc total likes on idea
         start_creating = not self.pk
         super().save(*args, **kwargs)  # here idea gets (if triggered by change rating event)

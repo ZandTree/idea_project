@@ -1,6 +1,8 @@
-from django.db.models import Avg, Count, Case, When, Max
-from .models import UserIdeaRelation
 from decimal import Decimal
+
+from django.db.models import Avg, Case, Count, Max, When
+
+from .models import UserIdeaRelation
 
 
 def calc_rating(obj):

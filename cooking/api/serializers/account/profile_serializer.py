@@ -1,9 +1,9 @@
 from django.contrib.auth import get_user_model
-from rest_framework import serializers as ser
-
 from profiles.models import Profile
-from api.serializers.account.user_serializer import UserSerializer
+from rest_framework import serializers as ser
 from timestamp.broadcast_utils.validators import validate_size
+
+from api.serializers.account.user_serializer import UserSerializer
 
 User = get_user_model()
 

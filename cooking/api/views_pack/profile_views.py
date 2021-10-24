@@ -1,19 +1,18 @@
-from django.shortcuts import get_object_or_404
-from django.contrib.auth import get_user_model
 import logging
 
-from rest_framework import generics
-from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
+from rest_framework import generics, status
 from rest_framework.exceptions import APIException, PermissionDenied
 from rest_framework.parsers import FormParser, MultiPartParser
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import status
-
-from api.serializers.account.user_serializer import UserSerializer
-from api.serializers.account.profile_serializer import ProfileSerializer
-from api.permissions import IsOwnerOrIsStaff
+from rest_framework.views import APIView
 from timestamp.broadcast_utils.user_utils import get_ip
+
+from api.permissions import IsOwnerOrIsStaff
+from api.serializers.account.profile_serializer import ProfileSerializer
+from api.serializers.account.user_serializer import UserSerializer
 
 User = get_user_model()
 logger = logging.getLogger('user_issues')

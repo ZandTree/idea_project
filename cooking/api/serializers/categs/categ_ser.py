@@ -1,6 +1,5 @@
-from rest_framework import serializers as ser
 from ideas.models import Category
-
+from rest_framework import serializers as ser
 
 # N1 for catges menu
 # categories with children: for rendering in left side menu and indentation

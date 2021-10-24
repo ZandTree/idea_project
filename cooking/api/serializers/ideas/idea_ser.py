@@ -1,15 +1,13 @@
-from django.utils.translation import gettext_lazy as _
-from django.contrib.auth import get_user_model
+import logging
 
+from django.contrib.auth import get_user_model
+from django.utils.translation import gettext_lazy as _
+from ideas.models import Idea
 from rest_framework import serializers as ser
 # help module for taggit
-from taggit_serializer.serializers import (TagListSerializerField,
-                                           TaggitSerializer)
-
-from ideas.models import Idea
+from taggit_serializer.serializers import (TaggitSerializer,
+                                           TagListSerializerField)
 from timestamp.broadcast_utils.validators import validate_size
-
-import logging
 
 logger = logging.getLogger('upload')
 

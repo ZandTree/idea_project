@@ -1,9 +1,9 @@
-from django.contrib.auth import get_user_model
+import logging
+
+from django.contrib import messages
+from django.contrib.auth import get_user_model, logout
 from django.http import HttpResponseRedirect
 from django.utils.deprecation import MiddlewareMixin
-from django.contrib import messages
-from django.contrib.auth import logout
-import logging
 
 logger = logging.getLogger('user_issues')
 

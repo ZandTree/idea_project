@@ -1,7 +1,7 @@
-from django.db import models
 from django.contrib.auth import get_user_model
-from mptt.models import MPTTModel, TreeForeignKey
+from django.db import models
 from ideas.models import Idea
+from mptt.models import MPTTModel, TreeForeignKey
 from timestamp.models import TimeStamp
 
 User = get_user_model()

@@ -1,6 +1,7 @@
 from django.contrib import admin
-from comments.models import Comment
 from mptt.admin import MPTTModelAdmin
+
+from comments.models import Comment
 
 
 class CommentAdmin(MPTTModelAdmin):
