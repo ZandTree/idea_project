@@ -14,16 +14,16 @@ from api.permissions import IsOwnerOrIsStaff
 from api.serializers.account.profile_serializer import ProfileSerializer
 from api.serializers.account.user_serializer import UserSerializer
 
-User = get_user_model()
-logger = logging.getLogger('user_issues')
-
 from profiles.models import Profile
 
 User = get_user_model()
+logger = logging.getLogger('user_issues')
 
 
 class ShowFollowingRetrView(APIView):
-    """return a list of people who are followed by a given person(for both public AND private view)"""
+    """ return a list of people who are followed by a given person(for both public AND 
+    private view) 
+    """
     permission_classes = (AllowAny,)
 
     def get(self, request, unid, format=None):
@@ -65,7 +65,7 @@ class ProfileRetrUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
        readOnly attr: name,
        writable/changable attr's: bio,website, image
     """
-    serializer_class = ProfileSerializer  # ProfileSerializer  (IsOwnerOrIsStaffOrReadOnly,)
+    serializer_class = ProfileSerializer  
     authentication_class = (IsAuthenticated,)
     permission_classes = (IsOwnerOrIsStaff,)
     queryset = Profile.objects.all()
@@ -76,7 +76,7 @@ class ProfileRetrUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         super().__init__(*args, **kwargs)
 
     def get_object(self):
-        """ in logs:status 405 if attempt to del account via this route"""
+        """ in logs:status 405 if attempt to delete account via this route"""
         try:
             """ can check user is banned here """
             obj = get_object_or_404(
@@ -114,41 +114,13 @@ class ProfileRetrUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
             remote_address = get_ip(self.request)
             logger.warning(f'User id {user_deleted_id} deleted his profile from IP:{remote_address}')
             return Response({'success': 'Successfully deleted user acoount'}, status=status.        HTTP_204_NO_CONTENT)
-        except Exception as e:
-            print("line 112 calling")
+        except Exception as e:            
             logger.error(f'500 ERROR: Failed to delete user id: {e}')
             return Response({'error': 'Failed to delete user account'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)   
 
-     # below method delete with failed unit test
-     # not owner of the account can delete somebody else account!  
-     # due to try except condition! 
-    # def delete(self, request, *args, **kwargs):
-    #     """ delete profile and delete user from db"""
-    #     try:
-    #         print("user from request is :",request.user)
-    #         print("user from request has unid  :",request.user.profile.unid)
-    #         unid = kwargs.get('unid')
-    #         print("tries to reach data and delete  user with unid in url",unid)
-    #         profile = get_object_or_404(Profile, unid=unid)
-    #         print('profile to delete belongs to',profile)
-    #         user = profile.user
-    #         print('user to delete is',user)
-    #         # print(self.check_object_permissions(self.request, profile))
-    #         user_deleted_id = user.id
-    #         user.delete()
-    #         # self.check_object_permissions(self.request, profile)
-    #         # print("check obj perms line 89",self.check_object_permissions(self.request,profile))
-    #         remote_address = get_ip(self.request)
-    #         logger.warning(f'User id {user_deleted_id} deleted his profile from IP:{remote_address}')
-    #         return Response({'success': 'Successfully deleted user acoount'}, status=status.HTTP_204_NO_CONTENT)
-    #     except User.DoesNotExist:
-    #         return Response({'error': 'user does not exist'}, status=status.HTTP_404_NOT_FOUND)
-    #     except Exception as e:
-    #         logger.error(f'500 ERROR: Failed to delete user id: {user_deleted_id} {e}')
-    #         return Response({'error': 'Failed to delete user account'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
 
-    def update(self, request, *args, **kwargs):
-        """let op: don't save twice to avoid err msg: file not img||corrupt"""
+    def update(self, request, *args, **kwargs):        
         setattr(request.data, '_mutable', True)
         img = request.data.get('image')
         if type(img) == str and len(img) != 0:
@@ -160,8 +132,7 @@ class ProfileRetrUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
         if type(img) != str:
             # img from front: thumbnail: [<InMemoryUploadedFile: one.jpg (application/octet-stream)>]
-            request.data['remove_file'] = True
-            # print('line 256: looks like img is real img upload')  
+            request.data['remove_file'] = True             
 
         partial = kwargs.pop('partial', False)
         profile = self.get_object()
@@ -175,7 +146,7 @@ class ProfileRetrUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class UnFollowUser(APIView):
-    """auth-ed user can remove item from the list of following"""
+    """ auth-ed user can remove item from the list of following """
     authentication_class = (IsAuthenticated,)
     permission_classes = (IsOwnerOrIsStaff,)
 
@@ -192,7 +163,8 @@ class UnFollowUser(APIView):
 
 
 class FollowAuthorView(APIView):
-    """auth-ed user can add to 'following' :
+    """
+    auth-ed user can add to 'following' :
     """
     authentication_class = (IsAuthenticated,)
 
