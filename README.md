@@ -23,7 +23,7 @@
 
 8. Bootstrap 4
 
-`git pull  https://github.com/ZandTree/idea_project.git`
+`git clone  https://github.com/ZandTree/idea_project.git`
 
 #### Bugs:
 
