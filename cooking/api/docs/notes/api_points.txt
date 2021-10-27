@@ -19,11 +19,6 @@ POST localhost:8000/auth/jwt/create/ (email,password)
 4.Get info about user
 GET localhost:8000/auth/users/me/ (in headers: 'JWT ey...gghghgh')
 
-A2 Auth (custom)
-===================================================================================================
-1.delete account
-DELETE/POST(?) localhost:8000/api/v1/delete-account/
-user is not deleted but user.is_active = False (no access via even still valid jwt)
 ====================================================================================================
 B Categories
 ====================================================================================================
