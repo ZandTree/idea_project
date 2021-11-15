@@ -1,23 +1,23 @@
-from django.contrib.auth import get_user_model
-from django.db.models import Count,Max,Avg
 import logging
 
-from rest_framework import viewsets
-from rest_framework import status
-from rest_framework.filters import SearchFilter, OrderingFilter  # built-in filters
-from rest_framework.mixins import UpdateModelMixin, RetrieveModelMixin
-
+from django.contrib.auth import get_user_model
+from django.db.models import Avg, Count, Max,F
+from django_filters.rest_framework import DjangoFilterBackend  # third party
+from ideas.models import Idea, UserIdeaRelation
+from rest_framework import status, viewsets
+from rest_framework.filters import (OrderingFilter,  # built-in filters
+                                    SearchFilter)
+from rest_framework.mixins import RetrieveModelMixin, UpdateModelMixin
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from timestamp.broadcast_utils.idea_utils import (checkTagStringLength,
+                                                  get_json_tags)
 
-from django_filters.rest_framework import DjangoFilterBackend  # third party
-
-from api.serializers.ideas.idea_ser import IdeaSerializer
-from api.serializers.user_idea_rel.user_idea_relation_ser import UserIdeaRelSerializer
 from api.permissions import IsAuthorOrIsStaffOrReadOnly
-from timestamp.broadcast_utils.idea_utils import get_json_tags, checkTagStringLength
-from ideas.models import Idea, UserIdeaRelation
+from api.serializers.ideas.idea_ser import IdeaSerializer
+from api.serializers.user_idea_rel.user_idea_relation_ser import \
+    UserIdeaRelSerializer
 
 User = get_user_model()
 logger = logging.getLogger('django')
@@ -54,14 +54,17 @@ class IdeaViewSet(viewsets.ModelViewSet):
     # This will be used as the default ordering
     ordering = ('-created_at',)
     # only for testing
-    pagination_class= None
+    # pagination_class= None
 
     
     def get_queryset(self):
+        #  order_by(F('max_rating').desc(nulls_last=True)) does not change default 
+        #  Postgres behaviour is to give NULL a higher sort value 
+        
         queryset = Idea.objects.annotate(
-            users_comments=Count('comments', distinct=True),
-                    
-        ).select_related('author', 'categ').prefetch_related('tags').order_by('-created_at')
+            users_comments=Count('comments', distinct=True)                    
+        ).select_related('author', 'categ').prefetch_related('tags').order_by(F('max_rating').desc(nulls_last=True))
+       
         
         return queryset
 
