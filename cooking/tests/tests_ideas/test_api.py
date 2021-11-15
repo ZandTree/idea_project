@@ -1,6 +1,6 @@
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from django.db.models import Count
+from django.db.models import Count,F
 from django.test.client import encode_multipart
 
 from decimal import Decimal
@@ -257,106 +257,115 @@ class IdeaTestCase(APITestCase):
         self.assertEqual(2, final_count_ideas)
 
 
-# class IdeaApiSearchOrderingTestCase(APITestCase):
-#     """ let op: postgresql vs sqlite3 users_comments"""
+class IdeaApiSearchOrderingTestCase(APITestCase):
+    """ let op: postgresql vs sqlite3 users_comments"""
 
-#     def setUp(self) -> None:
-#         self.category = Category.objects.create(name="chat")
-#         self.user1 = User.objects.create(username="rio", email="zoo@mail.com")
-#         self.user2 = User.objects.create(username="foo", email="bar@mail.com")
-#         self.user3 = User.objects.create(username="bar", email="gor@mail.com")
-#         self.idea1 = Idea.objects.create(
-#             title="afirst idea rio",
-#             author=self.user1,
-#             categ=self.category,
-#             lead_text="Greet 1",
-#             main_text="Main text one",
-#             featured=True,
-#             status=1
-#         )
-#         self.idea2 = Idea.objects.create(
-#             title="bsecond idea",
-#             author=self.user1,
-#             categ=self.category,
-#             lead_text="Greet 2 rio",
-#             main_text="Main text two",
-#             status=1
-#         )
-#         self.idea3 = Idea.objects.create(
-#             title="zthird idea",
-#             author=self.user1,
-#             categ=self.category,
-#             lead_text="Greet 3 ",
-#             main_text="Main text three rio",
-#             status=2
-#         )
-#         self.useridearelation1 = UserIdeaRelation.objects.create(
-#             user=self.user2,
-#             idea=self.idea1,            
-#             rating=5
-#         )
+    def setUp(self) -> None:
+        self.category = Category.objects.create(name="chat")
+        self.user1 = User.objects.create(username="rio", email="zoo@mail.com")
+        self.user2 = User.objects.create(username="foo", email="bar@mail.com")
+        self.user3 = User.objects.create(username="bar", email="gor@mail.com")
+        self.idea1 = Idea.objects.create(
+            title="afirst idea rio",
+            author=self.user1,
+            categ=self.category,
+            lead_text="Greet 1",
+            main_text="Main text one",
+            featured=True,
+            status=1
+        )
+        self.idea2 = Idea.objects.create(
+            title="bsecond idea",
+            author=self.user1,
+            categ=self.category,
+            lead_text="Greet 2 rio",
+            main_text="Main text two",
+            status=1
+        )
+        self.idea3 = Idea.objects.create(
+            title="zthird idea",
+            author=self.user1,
+            categ=self.category,
+            lead_text="Greet 3 ",
+            main_text="Main text three rio",
+            status=2
+        )
+        self.useridearelation1 = UserIdeaRelation.objects.create(
+            user=self.user2,
+            idea=self.idea1,            
+            rating=5
+        )
         
 
-#         self.useridearelation1 = UserIdeaRelation.objects.create(
-#             user=self.user2,
-#             idea=self.idea2,            
-#             rating=3
-#         )
+        self.useridearelation1 = UserIdeaRelation.objects.create(
+            user=self.user2,
+            idea=self.idea2,            
+            rating=3
+        )
 
-#         self.useridearelation3 = UserIdeaRelation.objects.create(
-#             user=self.user2,
-#             idea=self.idea2,            
-#             like = True
-#         )
-#         self.useridearelation3.rating = 4
-#         self.useridearelation3.save()
+        self.useridearelation3 = UserIdeaRelation.objects.create(
+            user=self.user2,
+            idea=self.idea2,            
+            like = True
+        )
+        self.useridearelation3.rating = 4
+        self.useridearelation3.save()
 
-    # def test_get_order_highest_rating_on_top(self):
-    #     """
-    #     search: test to get filter for rating: highest on top;
-    #     """
-    #     # ideas = Idea.objects.annotate(
-    #     #     users_comments=Count('comments', distinct=True)).filter(
-    #     #     id__in=(self.idea3.id, self.idea2.id, self.idea1.id)).order_by('title')
-    #     url = reverse('idea-list')
-    #     # serializer_data = IdeaSerializer(ideas, many=True).data
-    #     resp = self.client.get(url) #, data={"ordering": "max_rating"})      
-    #     # print("from ser-er response")  
-    #     print("resp.data",resp.data)
-    #     # resp = self.client.get(url, data={"ordering": "max_rating"})        
-    #     # highest_rating_on_top = Decimal(resp.data[0]['max_rating'])
-    #     self.assertEqual(resp.status_code, status.HTTP_200_OK)
-    #     #self.assertEqual(serializer_data, resp.data)
-    #     # self.assertEqual(highest_rating_on_top, self.idea1.max_rating)    
+     
 
-    # def test_get_search(self):
-    #     """
-    #     search: test to catch word in title/lead_text/main_text
-    #     """
-    #     ideas = Idea.objects.annotate(
-    #         users_comments=Count('comments', distinct=True)).filter(
-    #         id__in=(self.idea1.id, self.idea2.id, self.idea3.id)).order_by('-created_at')
-    #     url = reverse('idea-list')
-    #     serializer_data = IdeaSerializer(ideas, many=True).data
-    #     resp = self.client.get(url, data={"search": "rio"})
+    def test_get_search(self):
+        """
+        search: test to catch word in title/lead_text/main_text
+        """
+        ideas = Idea.objects.annotate(
+            users_comments=Count('comments', distinct=True)).filter(
+            id__in=(self.idea1.id, self.idea2.id, self.idea3.id)).order_by('-created_at')
+        url = reverse('idea-list')
+        serializer_data = IdeaSerializer(ideas, many=True).data
+        resp = self.client.get(url, data={"search": "rio"})
 
-    #     self.assertEqual(resp.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(serializer_data, resp.data)
-    #     self.assertEqual(len(serializer_data), 3)
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(serializer_data, resp.data)
+        self.assertEqual(len(serializer_data), 3)
 
-    # def test_get_order_oldest_on_top(self):
-    #     """
-    #     search: test to get filter for time created:old on top;
-    #     """
-    #     ideas = Idea.objects.annotate(
-    #         users_comments=Count('comments', distinct=True)).filter(
-    #         id__in=(self.idea3.id, self.idea2.id, self.idea1.id)).order_by('-created_at')
-    #     url = reverse('idea-list')
-    #     serializer_data = IdeaSerializer(ideas, many=True).data
-    #     resp = self.client.get(url, data={"ordering": "-created_at"})
-    #     first_the_oldest = resp.data[0]['title']
-    #     self.assertEqual(resp.status_code, status.HTTP_200_OK)
-    #     self.assertEqual(serializer_data, resp.data)
-    #     self.assertEqual(first_the_oldest, self.idea3.title)
+    def test_get_order_oldest_on_top(self):
+        """
+        search: test to get filter for time created:old on top;
+        """
+        ideas = Idea.objects.annotate(
+            users_comments=Count('comments', distinct=True)).filter(
+            id__in=(self.idea3.id, self.idea2.id, self.idea1.id)).order_by('-created_at')
+        url = reverse('idea-list')
+        serializer_data = IdeaSerializer(ideas, many=True).data
+        resp = self.client.get(url, data={"ordering": "-created_at"})
+        first_the_oldest = resp.data[0]['title']
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(serializer_data, resp.data)
+        self.assertEqual(first_the_oldest, self.idea3.title)
+
+    def test_get_order_highest_rating_on_top(self):
+        """
+        search: test to get sorted by rating: highest on top;
+        FAILED TESt
+        the default Postgres behaviour is to give NULL a higher sort value than everything else, so when sorting in descending order, all the NULLs appear at the top. 
+        Can't change it with order_by(F('max_rating').desc(nulls_last=True))
+        """
+        ideas = Idea.objects.annotate(
+            users_comments=Count('comments', distinct=True)).filter(
+            id__in=(self.idea3.id, self.idea2.id, self.idea1.id)).order_by(F('max_rating').desc(nulls_last=True)).order_by('-max_rating')
+        url = reverse('idea-list')
+        serializer_data = IdeaSerializer(ideas, many=True).data
+        for item in serializer_data:
+            for k,v in item.items():
+                if k=='max_rating':
+                    print(k,v)
+                    print('###')
+        resp = self.client.get(url, data={"ordering": "-max_rating"})        
+        highest_rating_on_top = Decimal(resp.data[0]['max_rating'])        
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(serializer_data, resp.data)
+        # TypeError: conversion from NoneType to Decimal is not supported
+        # None vs 5.00
+        self.assertEqual(highest_rating_on_top, self.idea1.max_rating)      
 
 
